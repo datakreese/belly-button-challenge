@@ -3,19 +3,25 @@ function buildMetadata(sample) {
   d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
 
     // get the metadata field
-    let metaData = d3.select(".metadata");
+    let metadata = data.metadata;
 
     // Filter the metadata for the object with the desired sample number
-
+    function filterMetadataById(metadataArray, id) {
+      return metadataArray.filter(item => item.id === id);
+  }
+    const filteredData = filterMetadataById(metadata, sample);
+    console.log(filteredData);
     // Use d3 to select the panel with id of `#sample-metadata`
-    let sampleMetadata = d3.select("#sample-metadata")
+    let sampleMetadata = d3.select("#sample-metadata");
 
     // Use `.html("") to clear any existing metadata
-    .html("")
+    sampleMetadata.html("");
 
     // Inside a loop, you will need to use d3 to append new
     // tags for each key-value in the filtered metadata.
-
+    Object.entries(filteredData[0]).forEach(([key, value]) => {
+      sampleMetadata.append("p").text(`${key}: ${value}`);
+  });
   });
 }
 
@@ -24,18 +30,16 @@ function buildCharts(sample) {
   d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
 
     // Get the samples field
-    let samples = d3.select(".samples")
+    let samples = d3.select(".samples");
 
     // Filter the samples for the object with the desired sample number
     function topTen(samples) {
-      // Sort the samples in descending order based on a specific field (e.g., sample_values)
-      samples.sort((a, b) => b.samples - a.samples);
+      samples.sort((a, b) => b.otu_ids - a.otu_ids);
       
       // Slice for top ten
       let topTen = samples.slice(0, 10);
       return topTen;
   }
-
 
     // Get the otu_ids, otu_labels, and sample_values
     let labels = d3.select(".otu_labels")
@@ -98,12 +102,49 @@ function init() {
     let names = d3.select(".names")
 
     // Use d3 to select the dropdown with id of `#selDataset`
-    let dropdownMenu = d3.select("#selDataset");
+    let dropdownMenu = d3.select("#selDataset").on("change", getData);
     let dataset = dropdownMenu.property("value");
     // Use the list of sample names to populate the select options
     // Hint: Inside a loop, you will need to use d3 to append a new
     // option for each sample name.
-
+    function getData() {
+    
+      // Assign the value of the dropdown menu option to a variable
+      let dataset = dropdownMenu.property("value");
+    
+      let newdata = [];
+    
+      if (dataset == 'australia') {
+        newdata = australia;
+      }
+      else if (dataset == 'brazil') {
+        newdata = brazil;
+      }
+      else if (dataset == 'uk') {
+        newdata = uk;
+      }
+      else if (dataset == 'mexico') {
+        newdata = mexico;
+      }
+      else if (dataset == 'singapore') {
+        newdata = singapore;
+      }
+      else if (dataset == 'southAfrica') {
+        newdata = southAfrica;
+      }
+    
+      // Call function to update the chart
+      updatePlotly(newdata);
+    }
+    
+    // Update the restyled plot's values
+    function updatePlotly(newdata) {
+      Plotly.restyle("pie", "values", [newdata]);
+    }
+    
+    init();
+    
+    
 
     // Get the first sample from the list
 

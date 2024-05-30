@@ -62,7 +62,9 @@ function buildCharts(sample) {
       title: 'Bacteria Cultures Per Sample',
       showlegend: false,
       height: 600,
-      width: 800
+      width: 800,
+      xaxis: {title: 'OTU ID'},
+      yaxis: {title: 'Number of Bacteria'}
     };
 
     // Render the Bubble Chart
@@ -80,7 +82,8 @@ function buildCharts(sample) {
     }];
 
     let design = {
-        title: title
+        title: title,
+        xaxis: {title: 'Number of Bacteria'}
     };
 
     // Build a Bar Chart
